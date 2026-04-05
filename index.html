@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Phosphor Icons via CDN -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- html2pdf.js via CDN for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- PDF.js & Mammoth.js for ATS Checker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="light">
+    <!-- Navbar (Shared) -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="ph ph-files"></i>
+            <span>Resume Builder</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" id="nav-templates">Templates</a>
+            <a href="#" id="nav-features">Features</a>
+            <a href="#" id="nav-ats">ATS Score</a>
+            <button id="dark-mode-toggle" title="Toggle Dark/Light Mode"><i class="ph ph-moon"></i></button>
+            <button class="btn btn-primary" id="btn-nav-create">Create Resume</button>
+        </div>
+    </nav>
+
+    <!-- App Container -->
+    <div id="app-container">
+
+        <!-- ================= LANDING PAGE ================= -->
+        <main id="landing-page" class="view-active">
+            <!-- Hero Section -->
+            <section class="hero glass-panel">
+                <div class="hero-content">
+                    <div class="badge">🚀 ATS-Friendly & Modern</div>
+                    <h1>Build Your Professional <br><span class="gradient-text">Resume in Minutes</span></h1>
+                    <p>Create, customize, and download your resume easily. Land your dream job with minimal effort and
+                        maximum impact.</p>
+                    <div class="cta-buttons">
+                        <button class="btn btn-primary btn-large" id="btn-hero-create">Create Resume</button>
+                        <button class="btn btn-outline btn-large" id="btn-hero-templates"><i class="ph ph-layout"></i>
+                            View Templates</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="features" id="section-features">
+                <h2>Why choose Resume Builder?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="ph ph-magic-wand"></i>
+                        <h3>Real-time Preview</h3>
+                        <p>See changes instantly as you type.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="ph ph-arrows-out-cardinal"></i>
+                        <h3>Drag & Drop</h3>
+                        <p>Easily reorder your sections.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="ph ph-swatches"></i>
+                        <h3>Multiple Templates</h3>
+                        <p>Choose from professional designs.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="ph ph-download-simple"></i>
+                        <h3>Export to PDF</h3>
+                        <p>Download a pixel-perfect PDF.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Templates Preview Section -->
+            <section class="templates-preview" id="section-templates">
+                <h2>Professional Templates</h2>
+                <p>Designed to beat the ATS and wow recruiters.</p>
+                <div class="templates-grid" id="landing-templates-grid">
+                    <!-- Populated via JS -->
+                </div>
+            </section>
+
+            <!-- How It Works Section -->
+            <section class="how-it-works glass-panel">
+                <h2>How It Works</h2>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <h3>Choose a Template</h3>
+                        <p>Select from 6-8 premium designs.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <h3>Add your Information</h3>
+                        <p>Use our real-time editor to fill your details.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <h3>Download your Resume</h3>
+                        <p>Export directly to PDF.</p>
+                    </div>
+                </div>
+
+
+            </section>
+
+            <!-- Testimonials -->
+            <section class="testimonials">
+                <h2>Loved by Job Seekers</h2>
+                <div class="testimo-grid">
+                    <div class="testimo-card">
+                        <p>"Resume Builder made my resume look like it was designed by a pro. I got 3 interviews in a
+                            week!"</p>
+                        <h4>- Sarah Jenkins</h4>
+                    </div>
+                    <div class="testimo-card">
+                        <p>"The real-time preview saved me so much time. Super intuitive and fast."</p>
+                        <h4>- Michael Chen</h4>
+                    </div>
+                    <div class="testimo-card">
+                        <p>"Finally, a builder that is truly free and doesn't hide PDF export behind a paywall."</p>
+                        <h4>- Emily Rodriguez</h4>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-links">
+                    <a href="#">About</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="social-links">
+                    <i class="ph ph-twitter-logo"></i>
+                    <i class="ph ph-linkedin-logo"></i>
+                    <i class="ph ph-github-logo"></i>
+                </div>
+                <p>&copy; 2026 Antigravity Resume Builder. All rights reserved.</p>
+            </footer>
+        </main>
+
+
+        <!-- ================= ATS SCORE CHECKER ================= -->
+        <main id="ats-page" class="view-hidden">
+            <div class="ats-layout">
+                <div class="ats-header text-center">
+                    <div class="badge">🤖 Human-Powered</div>
+                    <h2>ATS Resume <span class="gradient-text">Score Checker</span></h2>
+                    <p>Upload your resume and paste a job description to see how well you match.</p>
+                </div>
+
+                <div class="ats-grid">
+                    <!-- Left: Upload & JD Input -->
+                    <div class="ats-input-panel glass-panel">
+                        <h3>1. Upload Resume</h3>
+                        <div class="upload-zone" id="ats-upload-zone">
+                            <i class="ph ph-upload-simple"></i>
+                            <p>Drag & drop your PDF or DOCX</p>
+                            <span class="text-sm">or</span>
+                            <button class="btn btn-outline" id="btn-browse-file">Browse File</button>
+                            <input type="file" id="ats-file-input" accept=".pdf,.docx" hidden>
+                        </div>
+                        <div id="upload-status" class="file-status hidden" style="justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="ph ph-file-text"></i> <span id="file-name-display">Resume.pdf</span>
+                            </div>
+                            <button id="btn-remove-file" title="Remove File"
+                                style="background: none; border: none; font-size: 1.25rem; color: #ef4444; cursor: pointer; display: flex; align-items: center;"><i
+                                    class="ph ph-x-circle"></i></button>
+                        </div>
+
+                        <h3 class="mt-4">2. Job Description (Optional)</h3>
+                        <p class="text-sm text-muted mb-2" style="font-size: 0.9rem;">Paste the job description for
+                            keyword matching.</p>
+                        <textarea id="ats-jd-input" rows="6"
+                            placeholder="Paste the job requirements here..."></textarea>
+
+                        <button class="btn btn-primary btn-full mt-4" id="btn-analyze-resume"><i
+                                class="ph ph-magic-wand"></i> Analyze Resume</button>
+                    </div>
+
+                    <!-- Right: Results Dashboard -->
+                    <div class="ats-results-panel glass-panel" id="ats-results" style="display: none;">
+                        <div class="score-container">
+                            <div class="score-circle">
+                                <svg viewBox="0 0 36 36" class="circular-chart">
+                                    <path class="circle-bg"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="circle" id="score-circle-path" stroke-dasharray="0, 100"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                                <div class="score-text">
+                                    <span id="final-score">0</span><span class="percent-sign">%</span>
+                                </div>
+                            </div>
+                            <div class="score-label">ATS Compatibility Score</div>
+                            <div id="score-message" class="score-message"></div>
+                        </div>
+
+                        <div class="feedback-section">
+                            <h3>Detailed Analysis</h3>
+                            <div class="feedback-list" id="feedback-list">
+                                <!-- Feedback items injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ================= RESUME BUILDER DASHBOARD ================= -->
+        <main id="dashboard-page" class="view-hidden">
+            <div class="dashboard-layout">
+
+                <!-- Left Panel: Navigation & Section Selector -->
+                <aside class="left-panel glass-panel">
+                    <div class="builder-nav">
+                        <button class="nav-btn active" data-target="personal"><i class="ph ph-user"></i> Personal
+                            Details</button>
+                        <button class="nav-btn" data-target="experience"><i class="ph ph-briefcase"></i>
+                            Experience</button>
+                        <button class="nav-btn" data-target="education"><i class="ph ph-graduation-cap"></i>
+                            Education</button>
+                        <button class="nav-btn" data-target="skills"><i class="ph ph-lightning"></i> Skills</button>
+                        <button class="nav-btn" data-target="projects"><i class="ph ph-kanban"></i> Projects</button>
+                        <button class="nav-btn" data-target="certs"><i class="ph ph-certificate"></i>
+                            Certifications</button>
+                    </div>
+                </aside>
+
+                <!-- Center Panel: The Editor Form -->
+                <section class="center-panel">
+                    <div class="editor-header">
+                        <h2 id="editor-title">Personal Details</h2>
+                    </div>
+
+                    <div class="editor-scroll-area">
+                        <!-- Forms will be dynamically toggled here -->
+
+                        <!-- Personal Form -->
+                        <form id="form-personal" class="editor-form form-active">
+                            <div class="input-group">
+                                <label>Full Name</label>
+                                <input type="text" id="input-name" placeholder="John Doe">
+                            </div>
+                            <div class="input-group">
+                                <label>Job Title</label>
+                                <input type="text" id="input-title" placeholder="Frontend Developer">
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label>Email</label>
+                                    <input type="email" id="input-email" placeholder="john@example.com">
+                                </div>
+                                <div class="input-group">
+                                    <label>Phone</label>
+                                    <input type="text" id="input-phone" placeholder="+1 234 567 890">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Location</label>
+                                <input type="text" id="input-location" placeholder="New York, NY">
+                            </div>
+                            <div class="input-group">
+                                <label>LinkedIn / Website</label>
+                                <input type="text" id="input-link" placeholder="linkedin.com/in/johndoe">
+                            </div>
+                            <div class="input-group">
+                                <label>Summary</label>
+                                <textarea id="input-summary" rows="4"
+                                    placeholder="Brief professional summary..."></textarea>
+                            </div>
+                        </form>
+
+                        <!-- Experience Form -->
+                        <div id="form-experience" class="editor-form form-hidden">
+                            <div id="experience-list"></div>
+                            <button class="btn btn-outline btn-full" id="btn-add-experience">+ Add Experience</button>
+                        </div>
+
+                        <!-- Education Form -->
+                        <div id="form-education" class="editor-form form-hidden">
+                            <div id="education-list"></div>
+                            <button class="btn btn-outline btn-full" id="btn-add-education">+ Add Education</button>
+                        </div>
+
+                        <!-- Skills Form -->
+                        <div id="form-skills" class="editor-form form-hidden">
+                            <div class="input-group">
+                                <label>Skills (comma separated)</label>
+                                <textarea id="input-skills" rows="3"
+                                    placeholder="JavaScript, React, Node.js, HTML, CSS..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Projects Form -->
+                        <div id="form-projects" class="editor-form form-hidden">
+                            <div id="project-list"></div>
+                            <button class="btn btn-outline btn-full" id="btn-add-project">+ Add Project</button>
+                        </div>
+
+                        <!-- Certifications Form -->
+                        <div id="form-certs" class="editor-form form-hidden">
+                            <div id="cert-list"></div>
+                            <button class="btn btn-outline btn-full" id="btn-add-cert">+ Add Certification</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Right Panel: Live Preview & Toolbar -->
+                <section class="right-panel">
+                    <div class="preview-toolbar">
+                        <select id="template-switcher" class="select-input">
+                            <option value="minimal">Minimalist</option>
+                            <option value="modern">Modern Blue</option>
+                            <option value="creative">Creative Split</option>
+                            <option value="corporate">Corporate Standard</option>
+                            <option value="tech">Tech Focused</option>
+                            <option value="elegant">Elegant Serif</option>
+                        </select>
+                        <div class="toolbar-actions">
+                            <button class="btn btn-icon" title="Share via Link (mock)" id="btn-share"><i
+                                    class="ph ph-share-network"></i></button>
+                            <button class="btn btn-primary" id="btn-export-pdf"><i class="ph ph-download-simple"></i>
+                                Download PDF</button>
+                        </div>
+                    </div>
+
+                    <div class="preview-scroll-area glass-panel">
+                        <!-- The A4 Aspect Ratio Container -->
+                        <div class="resume-wrapper" id="resume-wrapper">
+                            <div class="resume-content" id="resume-preview-container">
+                                <!-- Rendered dynamically via js/templates.js -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/templates.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/ats.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
