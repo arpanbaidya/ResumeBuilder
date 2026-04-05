@@ -33,8 +33,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnHeroCreate = document.getElementById('btn-hero-create');
     const logo = document.querySelector('.logo');
     const navLinks = document.querySelector('.nav-links');
+    const navbar = document.querySelector('.navbar');
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
     const navAts = document.getElementById('nav-ats');
     const atsPage = document.getElementById('ats-page');
+
+    function closeMobileMenu() {
+        if (!navbar || !mobileMenuToggle) return;
+        navbar.classList.remove('mobile-open');
+        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    if (mobileMenuToggle && navbar) {
+        mobileMenuToggle.addEventListener('click', () => {
+            const willOpen = !navbar.classList.contains('mobile-open');
+            navbar.classList.toggle('mobile-open', willOpen);
+            mobileMenuToggle.setAttribute('aria-expanded', String(willOpen));
+        });
+    }
 
     function resetAtsPage() {
         const btnRemove = document.getElementById('btn-remove-file');
@@ -44,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function navigateToDashboard() {
+        closeMobileMenu();
         landingPage.classList.remove('view-active');
         landingPage.classList.add('view-hidden');
         if(atsPage && atsPage.classList.contains('view-active')) {
@@ -70,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function navigateToLanding() {
+        closeMobileMenu();
         dashboardPage.classList.remove('view-active');
         dashboardPage.classList.add('view-hidden');
         if(atsPage && atsPage.classList.contains('view-active')) {
@@ -92,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function navigateToAts(e) {
+        closeMobileMenu();
         if(e) e.preventDefault();
         landingPage.classList.remove('view-active');
         landingPage.classList.add('view-hidden');
@@ -120,16 +139,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('nav-templates').addEventListener('click', (e) => {
         e.preventDefault();
         document.getElementById('section-templates').scrollIntoView({ behavior: 'smooth' });
+        closeMobileMenu();
     });
     
     document.getElementById('nav-features').addEventListener('click', (e) => {
         e.preventDefault();
         document.getElementById('section-features').scrollIntoView({ behavior: 'smooth' });
+        closeMobileMenu();
     });
     
     document.getElementById('btn-hero-templates').addEventListener('click', (e) => {
         e.preventDefault();
         document.getElementById('section-templates').scrollIntoView({ behavior: 'smooth' });
+        closeMobileMenu();
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            closeMobileMenu();
+        }
     });
 
 
