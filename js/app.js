@@ -161,10 +161,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // Share link trigger
-    if(document.getElementById('btn-share')) {
-        document.getElementById('btn-share').addEventListener('click', () => {
-            alert('Shareable link generated! (Mocked)');
-        });
-    }
 });

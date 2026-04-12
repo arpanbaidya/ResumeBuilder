@@ -426,11 +426,14 @@ document.addEventListener('DOMContentLoaded', () => {
         landingGrid.querySelectorAll('.btn-select-template').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const tmpl = e.target.getAttribute('data-template');
-                // Set the value in the dashboard
+                // Update the dashboard select AND fire change so state.template syncs
                 const dashSelect = document.getElementById('template-switcher');
-                if(dashSelect) dashSelect.value = tmpl;
-                // Navigate
-                document.getElementById('btn-hero-create').click(); // trigger navigation
+                if (dashSelect) {
+                    dashSelect.value = tmpl;
+                    dashSelect.dispatchEvent(new Event('change'));
+                }
+                // Navigate — renderPreview() runs after with the correct template
+                document.getElementById('btn-hero-create').click();
             });
         });
     }
