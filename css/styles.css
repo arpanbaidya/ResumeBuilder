@@ -1098,39 +1098,7 @@ body.dark .overlay-body { background: #0b0f19; }
   .overlay-header h3 { font-size: 0.9rem; }
 }
 
-.overflow-alert {
-  position: fixed;
-  top: -100px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(239, 68, 68, 0.95);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 50px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  box-shadow: 0 10px 30px rgba(239,68,68,0.3);
-  transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 1000;
-  pointer-events: none;
-}
-.overflow-alert.show {
-  top: 20px;
-}
-.overflow-alert.jiggle {
-  animation: jiggle 0.3s ease;
-}
-@keyframes jiggle {
-  0% { transform: translateX(-50%); }
-  25% { transform: translateX(calc(-50% - 5px)); }
-  50% { transform: translateX(calc(-50% + 5px)); }
-  75% { transform: translateX(calc(-50% - 5px)); }
-  100% { transform: translateX(-50%); }
-}
+
 body.page-overflowing .editor-scroll-area input:focus,
 body.page-overflowing .editor-scroll-area textarea:focus {
   border-color: #ef4444 !important;

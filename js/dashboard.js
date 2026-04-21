@@ -144,14 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
             wrapper.style.overflow = 'hidden';
 
             const dashboardPage = document.getElementById('dashboard-page');
-            const alertElement = document.getElementById('overflow-alert');
 
             if (currentHeight > A4_MAX_HEIGHT) {
                 document.body.classList.add('page-overflowing');
-                if (alertElement) alertElement.classList.add('show');
             } else {
                 document.body.classList.remove('page-overflowing');
-                if (alertElement) alertElement.classList.remove('show');
             }
         }
     }
@@ -165,12 +162,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End'];
                 if (!allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
                     e.preventDefault();
-                    // Jiggle the toast to tell them to delete
-                    const alertElement = document.getElementById('overflow-alert');
-                    if(alertElement) {
-                        alertElement.classList.add('jiggle');
-                        setTimeout(() => alertElement.classList.remove('jiggle'), 300);
-                    }
                 }
             }
         }
