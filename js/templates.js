@@ -21,17 +21,29 @@ const commonResumeStyles = `
     </style>
 `;
 
+// Helper: split a description string into bullet lines
+const toBullets = (desc) => {
+    if (!desc) return '';
+    // If the text already contains newlines or semicolons, split on them
+    const lines = desc.split(/[\n;]+/).map(s => s.trim()).filter(Boolean);
+    if (lines.length <= 1) {
+        // single block — emit as one bullet
+        return `<div style="margin-bottom:4px;">• ${desc.trim()}</div>`;
+    }
+    return lines.map(l => `<div style="margin-bottom:3px;">• ${l}</div>`).join('');
+};
+
 // Helper function to build lists
 const buildExpList = (items) => {
-    if(!items || items.length === 0) return '';
+    if (!items || items.length === 0) return '';
     return items.map(item => `
-        <div>
+        <div style="margin-bottom:12px;">
             <div class="item-row">
                 <span class="item-title">${item.title}</span>
                 <span class="item-date">${item.date}</span>
             </div>
             <div class="item-subtitle">${item.company}</div>
-            <p class="item-desc">${item.desc}</p>
+            <div class="item-desc" style="margin-top:4px;">${toBullets(item.desc)}</div>
         </div>
     `).join('');
 };
@@ -50,11 +62,11 @@ const buildEduList = (items) => {
 };
 
 const buildProjList = (items) => {
-    if(!items || items.length === 0) return '';
+    if (!items || items.length === 0) return '';
     return items.map(item => `
-        <div>
+        <div style="margin-bottom:10px;">
             <div class="item-title">${item.name}</div>
-            <p class="item-desc">${item.desc}</p>
+            <div class="item-desc" style="margin-top:3px;">${toBullets(item.desc)}</div>
         </div>
     `).join('');
 };
@@ -165,6 +177,15 @@ window.ResumeTemplates = {
                         ${buildProjList(data.projects)}
                     </div>
                 ` : ''}
+
+                ${data.certs.length ? `
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="font-size: 18px; color: #2b6cb0; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Certifications</h2>
+                        <ul style="margin:0; padding-left: 20px; font-size: 14px; color: #4a5568;">
+                            ${data.certs.map(c => `<li style="margin-bottom:5px"><b>${c.name}</b> — ${c.date}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
             </div>
         </div>
     `,
@@ -200,6 +221,15 @@ window.ResumeTemplates = {
                         <div style="margin-bottom: 30px;">
                             <h2 style="font-size: 22px; color: #111; margin-bottom: 15px;">Selected Projects</h2>
                             ${buildProjList(data.projects)}
+                        </div>
+                    ` : ''}
+
+                    ${data.certs.length ? `
+                        <div style="margin-bottom: 30px;">
+                            <h2 style="font-size: 22px; color: #111; margin-bottom: 15px;">Certifications</h2>
+                            <ul style="list-style: none; margin: 0; padding: 0;">
+                                ${data.certs.map(c => `<li style="font-size:14px; margin-bottom:8px;">• <b>${c.name}</b> <span style="color:#666">(${c.date})</span></li>`).join('')}
+                            </ul>
                         </div>
                     ` : ''}
                 </div>
@@ -258,6 +288,22 @@ window.ResumeTemplates = {
                 </div>
             ` : ''}
 
+            ${data.projects.length ? `
+                <div style="margin-bottom: 15px;">
+                    <h2 style="font-size: 14px; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #000; margin-bottom: 8px;">Projects</h2>
+                    ${buildProjList(data.projects)}
+                </div>
+            ` : ''}
+
+            ${data.certs.length ? `
+                <div style="margin-bottom: 15px;">
+                    <h2 style="font-size: 14px; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #000; margin-bottom: 8px;">Certifications</h2>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 13px;">
+                        ${data.certs.map(c => `<li><b>${c.name}</b>, ${c.date}</li>`).join('')}
+                    </ul>
+                </div>
+            ` : ''}
+
             ${data.skills ? `
                 <div style="margin-bottom: 15px;">
                     <h2 style="font-size: 14px; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #000; margin-bottom: 5px;">Technical Skills</h2>
@@ -274,7 +320,7 @@ window.ResumeTemplates = {
                 <h1 style="color: #38bdf8; font-size: 32px;">> ${data.personal.name || 'John Doe'}_</h1>
                 <p style="font-size: 16px; color: #94a3b8;">${data.personal.title || 'Software Engineer'}</p>
                 <div style="font-size: 13px; color: #64748b; margin-top: 10px;">
-                    ${data.personal.email} // ${data.personal.phone} // ${data.personal.link}
+                    ${data.personal.email} // ${data.personal.phone} // ${data.personal.location} // ${data.personal.link}
                 </div>
             </div>
 
@@ -323,6 +369,27 @@ window.ResumeTemplates = {
                     `).join('')}
                 </div>
             ` : ''}
+
+            ${data.projects.length ? `
+                <div style="margin-bottom: 30px;">
+                    <h2 style="color: #38bdf8; font-size: 18px; margin-bottom: 15px;">[ Projects ]</h2>
+                    ${data.projects.map(item => `
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 14px;"><strong style="color: #6ee7b7;">${item.name}</strong></div>
+                            <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin-top: 5px;">${item.desc}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : ''}
+
+            ${data.certs.length ? `
+                <div style="margin-bottom: 30px;">
+                    <h2 style="color: #38bdf8; font-size: 18px; margin-bottom: 10px;">[ Certifications ]</h2>
+                    <ul style="list-style: none; margin: 0; padding: 0;">
+                        ${data.certs.map(c => `<li style="font-size:13px; margin-bottom:5px">-- <span style="color:#e2e8f0;">${c.name}</span> (<span style="color:#64748b">${c.date}</span>)</li>`).join('')}
+                    </ul>
+                </div>
+            ` : ''}
         </div>
     `,
 
@@ -333,7 +400,7 @@ window.ResumeTemplates = {
                 <h1 style="font-size: 36px; font-weight: normal; letter-spacing: 2px; color: #000;">${data.personal.name || 'John Doe'}</h1>
                 <p style="font-style: italic; color: #666; font-size: 16px; margin: 5px 0 15px 0;">${data.personal.title || 'Professional Title'}</p>
                 <div style="font-size: 12px; font-family: sans-serif; text-transform: uppercase; letter-spacing: 1px; color: #888;">
-                    ${data.personal.email} &nbsp;·&nbsp; ${data.personal.phone} &nbsp;·&nbsp; ${data.personal.location}
+                    ${data.personal.email} &nbsp;·&nbsp; ${data.personal.phone} &nbsp;·&nbsp; ${data.personal.location} &nbsp;·&nbsp; ${data.personal.link}
                 </div>
             </div>
 
@@ -379,6 +446,27 @@ window.ResumeTemplates = {
                                     <p style="font-size: 13px; line-height: 1.6; color: #555;">${item.desc}</p>
                                 </div>
                             `).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${data.projects.length ? `
+                        <div style="margin-bottom: 40px;">
+                            <h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 15px;">Projects</h2>
+                            ${data.projects.map(item => `
+                                <div style="margin-bottom: 20px;">
+                                    <b style="font-size: 15px; color: #222; display:block; margin-bottom:4px;">${item.name}</b>
+                                    <p style="font-size: 13px; line-height: 1.6; color: #555;">${item.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${data.certs.length ? `
+                        <div style="margin-bottom: 40px;">
+                            <h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 15px;">Certifications</h2>
+                            <ul style="margin:0; padding-left:15px; font-size:13px; color:#444;">
+                                ${data.certs.map(c => `<li><b>${c.name}</b>, ${c.date}</li>`).join('')}
+                            </ul>
                         </div>
                     ` : ''}
                 </div>

@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Builder</title>
+    <meta name="description" content="Build a professional, ATS-friendly resume in minutes. Real-time editing, multiple templates, one-click PDF export.">
+    <title>Resume Builder — Build Your Professional Resume Online</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -330,7 +331,21 @@
                             <option value="tech">Tech Focused</option>
                             <option value="elegant">Elegant Serif</option>
                         </select>
+
+                        <!-- Desktop Edit/Preview Mode Toggle -->
+                        <div class="mode-toggle-wrap">
+                            <span class="mode-toggle-label">Edit</span>
+                            <label class="mode-toggle-switch" title="Toggle full preview mode">
+                                <input type="checkbox" id="preview-mode-toggle" aria-label="Toggle preview mode">
+                                <span class="mode-toggle-slider"></span>
+                            </label>
+                            <span class="mode-toggle-label">Preview</span>
+                        </div>
+
                         <div class="toolbar-actions">
+                            <button class="btn btn-outline" id="btn-check-ats" title="Instantly check ATS score without downloading">
+                                <i class="ph ph-chart-bar"></i> ATS Score
+                            </button>
                             <button class="btn btn-primary" id="btn-export-pdf"><i class="ph ph-download-simple"></i>
                                 Download PDF</button>
                         </div>
@@ -347,7 +362,62 @@
                 </section>
 
             </div>
+
+            <!-- Mobile Bottom Tab Bar -->
+            <nav class="mobile-tab-bar" id="mobile-tab-bar" aria-label="Editor navigation">
+                <div class="mobile-tab-bar-inner">
+                    <button class="tab-btn active" id="tab-edit" aria-label="Edit mode">
+                        <i class="ph ph-pencil-simple"></i>
+                        <span>Edit</span>
+                    </button>
+                    <button class="tab-btn" id="tab-preview" aria-label="Preview mode">
+                        <i class="ph ph-eye"></i>
+                        <span>Preview</span>
+                    </button>
+                    <button class="tab-btn" id="tab-ats" aria-label="Check ATS score">
+                        <i class="ph ph-chart-bar"></i>
+                        <span>ATS</span>
+                    </button>
+                </div>
+            </nav>
+
         </main>
+
+    </div><!-- /#app-container -->
+
+    <!-- ================= FULLSCREEN PREVIEW OVERLAY (Mobile / Preview Mode) ================= -->
+    <div id="preview-overlay" role="dialog" aria-modal="true" aria-label="Resume Preview">
+        <div class="overlay-header">
+            <h3><i class="ph ph-eye" style="margin-right:0.4rem;color:var(--primary-color);"></i>Resume Preview</h3>
+            <div class="overlay-actions">
+                <button class="btn btn-outline" id="btn-fit-toggle" title="Fit resume to screen width">
+                    <i class="ph ph-arrows-horizontal"></i> Fit
+                </button>
+                <button class="btn btn-outline" id="btn-overlay-ats" title="Check ATS Score instantly">
+                    <i class="ph ph-chart-bar"></i>
+                </button>
+                <button class="btn btn-primary" id="btn-overlay-download">
+                    <i class="ph ph-download-simple"></i> PDF
+                </button>
+                <button class="btn-icon" id="btn-close-overlay" title="Back to Editor" aria-label="Close preview">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+        </div>
+        <div class="overlay-body" id="overlay-body">
+            <div class="resume-scale-container" id="resume-scale-container">
+                <div class="resume-wrapper-overlay" id="resume-wrapper-overlay">
+                    <!-- Mirror of resume-preview-container, synced by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Overflow alert -->
+    <div class="overflow-alert" id="overflow-alert">
+        <i class="ph ph-warning-circle"></i> 1-Page Limit Reached! Cannot add more text. Please shorten.
     </div>
 
     <!-- Scripts -->

@@ -321,4 +321,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Expose programmatic ATS analysis for the live resume builder
+    window.analyzeTextForATS = (text) => {
+        const jdText = jdInput.value.trim();
+        
+        // Setup UI for analysis
+        currentFile = { name: 'Live Resume Build.pdf', type: 'application/pdf' };
+        fileNameDisplay.textContent = "Live Resume Build";
+        statusDiv.classList.remove('hidden');
+        uploadZone.style.display = 'none';
+        
+        btnAnalyze.disabled = true;
+        btnAnalyze.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Analyzing...';
+        resultsPanel.style.display = 'none';
+        
+        // Small delay for UI update, then run scoring
+        setTimeout(() => {
+            runATSScoring(text, jdText);
+            resultsPanel.style.display = 'flex';
+            resultsPanel.scrollIntoView({ behavior: 'smooth' });
+            btnAnalyze.disabled = false;
+            btnAnalyze.innerHTML = '<i class="ph ph-magic-wand"></i> Analyze Resume';
+        }, 500);
+    };
+
 });

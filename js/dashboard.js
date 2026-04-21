@@ -1,54 +1,104 @@
 // dashboard.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Initial State ---
+    // --- Initial State (ATS-optimised demo content) ---
     let state = {
         personal: {
-            name: 'John Doe',
-            title: 'Frontend Developer',
-            email: 'john@example.com',
-            phone: '+1 234 567 890',
-            location: 'New York, NY',
-            link: 'linkedin.com/in/johndoe',
-            summary: 'Creative and detail-oriented Frontend Developer with 4 years of experience building responsive web applications using JavaScript, React, and modern CSS architecture.'
+            name: 'Alex Johnson',
+            title: 'Full Stack Engineer',
+            email: 'alex.johnson@email.com',
+            phone: '+1 (555) 867-5309',
+            location: 'San Francisco, CA',
+            link: 'linkedin.com/in/alexjohnson',
+            summary: 'Results-driven Software Engineer with 5+ years of experience. Designed scalable web applications using React and Node.js. Achieved a 40% improvement in system performance.'
         },
         experience: [
             {
                 id: Date.now().toString(),
-                title: 'Senior Frontend Engineer',
-                company: 'TechCorp Solutions',
-                date: 'Present - Jan 2022',
-                desc: 'Led the development of a company-wide internal dashboard framework, reducing load times by 40%.'
+                title: 'Senior Software Engineer',
+                company: 'CloudScale Technologies',
+                date: 'Jan 2022 – Present',
+                desc: 'Led a team of 6 engineers to design a microservices architecture, reducing deployment time by 60%;Developed a real-time analytics dashboard using React, increasing data visibility for 500+ stakeholders;Coordinated releases achieving 99.9% uptime'
+            },
+            {
+                id: (Date.now() + 1).toString(),
+                title: 'Software Engineer',
+                company: 'DataBridge Inc.',
+                date: 'Jun 2019 – Dec 2021',
+                desc: 'Managed development of 3 web applications serving 10,000+ active users;Implemented CI/CD pipelines reducing manual testing by 35%'
             }
         ],
         education: [
             {
                 id: Date.now().toString(),
-                degree: 'B.S. in Computer Science',
-                school: 'State University',
-                date: 'May 2020'
+                degree: 'B.S. Computer Science',
+                school: 'UC Berkeley',
+                date: 'May 2019'
             }
         ],
-        skills: 'JavaScript, HTML5, CSS3, React, Node.js, Git, Figma',
+        skills: 'JavaScript, TypeScript, React, Node.js, Python, SQL, AWS, Docker',
         projects: [
             {
                 id: Date.now().toString(),
-                name: 'E-commerce React SPA',
-                desc: 'A full-stack e-commerce solution with Stripe integration.'
+                name: 'TaskFlow SaaS',
+                desc: 'Designed a full-stack SaaS application using React and PostgreSQL;Achieved sub-200ms response times through optimised queries'
             }
         ],
         certs: [
             {
                 id: Date.now().toString(),
-                name: 'AWS Certified Cloud Practitioner',
+                name: 'AWS Solutions Architect – Assoc.',
                 date: '2023'
             }
         ],
         template: 'minimal'
     };
+    
+    // (Autosave feature removed per user request)
 
     // Global reference for initial render
     window.renderPreview = renderPreview;
+
+    // Global helper: extract plain text from current state for ATS scoring
+    window.getResumeText = () => {
+        let text = 'Summary\n';
+        if (state.personal) {
+            text += `${state.personal.name} ${state.personal.title} ${state.personal.email} ${state.personal.phone} ${state.personal.summary}\n`;
+        }
+        
+        // Helper to format descriptions as bullet points for ATS checker
+        const formatDesc = (desc) => {
+            if (!desc) return '';
+            return desc.split(/[\n;]+/).map(s => s.trim() ? `• ${s.trim()}` : '').join('\n');
+        };
+
+        text += 'Experience\n';
+        if (state.experience) {
+            state.experience.forEach(e => {
+                text += `${e.title} ${e.company} ${e.date}\n${formatDesc(e.desc)}\n`;
+            });
+        }
+        text += 'Education\n';
+        if (state.education) {
+            state.education.forEach(e => {
+                text += `${e.degree} ${e.school} ${e.date}\n`;
+            });
+        }
+        text += 'Skills\n' + (state.skills || '') + '\n';
+        text += 'Projects\n';
+        if (state.projects) {
+            state.projects.forEach(p => {
+                text += `${p.name}\n${formatDesc(p.desc)}\n`;
+            });
+        }
+        text += 'Certifications\n';
+        if (state.certs) {
+            state.certs.forEach(c => {
+                text += `${c.name} ${c.date}\n`;
+            });
+        }
+        return text;
+    };
 
     const previewContainer = document.getElementById('resume-preview-container');
     const templateSwitcher = document.getElementById('template-switcher');
@@ -66,16 +116,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Render Logic ---
     function renderPreview() {
-        if(!previewContainer) return;
-        
+        if (!previewContainer) return;
+
         // Fetch HTML from templates.js
         const tmplFn = window.ResumeTemplates[state.template];
-        if(tmplFn) {
-            previewContainer.innerHTML = tmplFn(state);
+        if (tmplFn) {
+            const html = tmplFn(state);
+            previewContainer.innerHTML = html;
+            // Sync the fullscreen overlay preview
+            const overlayWrapper = document.getElementById('resume-wrapper-overlay');
+            if (overlayWrapper) overlayWrapper.innerHTML = html;
+        }
+
+        // --- ENFORCE STRICT 1 PAGE LIMIT ---
+        const wrapper = document.getElementById('resume-wrapper');
+        if (wrapper && previewContainer) {
+            // Approx 297mm in pixels at 96dpi (1122.5), giving slight tolerance
+            const A4_MAX_HEIGHT = 1122; 
+            
+            // Measure natural unconstrained height
+            wrapper.style.maxHeight = 'none';
+            wrapper.style.overflow = 'visible';
+            const currentHeight = previewContainer.scrollHeight;
+            
+            // Reapply strict constraints
+            wrapper.style.maxHeight = '297mm';
+            wrapper.style.overflow = 'hidden';
+
+            const dashboardPage = document.getElementById('dashboard-page');
+            const alertElement = document.getElementById('overflow-alert');
+
+            if (currentHeight > A4_MAX_HEIGHT) {
+                document.body.classList.add('page-overflowing');
+                if (alertElement) alertElement.classList.add('show');
+            } else {
+                document.body.classList.remove('page-overflowing');
+                if (alertElement) alertElement.classList.remove('show');
+            }
         }
     }
 
+    // Intercept typing globally if document is overflowing
+    document.addEventListener('keydown', (e) => {
+        if (document.body.classList.contains('page-overflowing')) {
+            // Check if user is typing inside the editor panel
+            if (e.target.closest('.center-panel')) {
+                // Allow deletion, navigation, and shortcuts (Ctrl/Cmd)
+                const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End'];
+                if (!allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    // Jiggle the toast to tell them to delete
+                    const alertElement = document.getElementById('overflow-alert');
+                    if(alertElement) {
+                        alertElement.classList.add('jiggle');
+                        setTimeout(() => alertElement.classList.remove('jiggle'), 300);
+                    }
+                }
+            }
+        }
+    });
+
     // --- Template Switching ---
+    // Sync the select element with the restored state
+    if (templateSwitcher) templateSwitcher.value = state.template;
+
     templateSwitcher.addEventListener('change', (e) => {
         state.template = e.target.value;
         renderPreview();

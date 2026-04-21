@@ -680,10 +680,13 @@ body.dark .preview-scroll-area { background: #0f172a; }
   background: white;
   color: #111;
   width: 210mm;
+  height: 297mm;         /* Enforce exact A4 height */
+  max-height: 297mm;
   min-height: 297mm;
   box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08);
   transform-origin: top center;
-  position: relative; overflow: hidden;
+  position: relative; 
+  overflow: hidden;      /* Physically clip overflow from rendering */
   border-radius: 4px;
 }
 
@@ -794,3 +797,419 @@ body.dark .preview-scroll-area { background: #0f172a; }
   background: rgba(99,102,241,0.20);
   color: var(--text-main);
 }
+
+/* ═══════════════════════════════════════
+   EDIT / PREVIEW TOGGLE SWITCH (Desktop)
+═══════════════════════════════════════ */
+.mode-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.mode-toggle-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  user-select: none;
+}
+.mode-toggle-switch {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.mode-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+.mode-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--glass-surface-mid);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 28px;
+  border: var(--glass-border-subtle);
+  transition: var(--transition);
+}
+.mode-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 3px;
+  top: 3px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  transition: var(--transition);
+  box-shadow: 0 2px 6px rgba(99,102,241,0.45);
+}
+.mode-toggle-switch input:checked + .mode-toggle-slider {
+  background: rgba(99,102,241,0.15);
+  border-color: rgba(99,102,241,0.35);
+}
+.mode-toggle-switch input:checked + .mode-toggle-slider::before {
+  transform: translateX(24px);
+  background: var(--primary-color);
+}
+
+/* ═══════════════════════════════════════
+   DESKTOP PREVIEW MODE — collapse panels
+═══════════════════════════════════════ */
+#dashboard-page.preview-mode .left-panel,
+#dashboard-page.preview-mode .center-panel {
+  display: none;
+}
+#dashboard-page.preview-mode .dashboard-layout {
+  grid-template-columns: 1fr;
+}
+#dashboard-page.preview-mode .right-panel {
+  height: calc(100vh - 70px - 2rem);
+  overflow: hidden;
+}
+
+/* Hide desktop toggle on mobile (tab bar takes its role) */
+@media (max-width: 768px) {
+  .mode-toggle-wrap { display: none; }
+}
+
+/* ═══════════════════════════════════════
+   AUTOSAVE TOAST
+═══════════════════════════════════════ */
+.autosave-toast {
+  position: fixed;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--glass-surface-light);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: var(--glass-border-strong);
+  border-radius: 99px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--success-color);
+  box-shadow: var(--glass-shadow-card);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 9999;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.autosave-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.autosave-toast i { font-size: 1rem; }
+
+/* On desktop, sit lower (no tab bar) */
+@media (min-width: 769px) {
+  .autosave-toast { bottom: 1.5rem; }
+}
+
+/* ═══════════════════════════════════════
+   MOBILE BOTTOM TAB BAR
+═══════════════════════════════════════ */
+.mobile-tab-bar {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 62px;
+  z-index: 150;
+  background: var(--glass-surface-light);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-top: var(--glass-border-strong);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.10);
+}
+.mobile-tab-bar-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 100%;
+}
+.tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: var(--transition);
+  min-height: 44px;
+  position: relative;
+}
+.tab-btn i { font-size: 1.3rem; }
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 25%; right: 25%;
+  height: 2px;
+  background: var(--primary-color);
+  border-radius: 2px 2px 0 0;
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+}
+.tab-btn.active { color: var(--primary-color); }
+.tab-btn.active i { color: var(--primary-color); }
+.tab-btn.active::after { transform: scaleX(1); }
+
+@media (max-width: 768px) {
+  .mobile-tab-bar { display: block; }
+  #dashboard-page { padding-bottom: 70px; }
+}
+
+/* ═══════════════════════════════════════
+   FULLSCREEN PREVIEW OVERLAY
+═══════════════════════════════════════ */
+#preview-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  flex-direction: column;
+  background: var(--bg-color);
+}
+#preview-overlay.overlay-active {
+  display: flex;
+  animation: overlaySlideUp 0.32s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes overlaySlideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.overlay-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  flex-shrink: 0;
+  background: var(--glass-surface-light);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: var(--glass-border-strong);
+  box-shadow: var(--glass-shadow-navbar);
+}
+.overlay-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  display: flex;
+  align-items: center;
+}
+.overlay-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.overlay-actions .btn {
+  font-size: 0.82rem;
+  padding: 0.4rem 0.85rem;
+}
+.overlay-actions .btn-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.overlay-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1.5rem 1rem 1rem;
+  background: #cbd5e1;
+}
+body.dark .overlay-body { background: #0b0f19; }
+
+/* The scale container holds the resume at its computed visual size */
+.resume-scale-container {
+  position: relative;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+/* The overlay resume wrapper — true A4 dimensions, scaled by JS */
+.resume-wrapper-overlay {
+  background: white;
+  color: #111;
+  width: 794px;   /* 210mm @ 96dpi */
+  min-height: 1123px; /* 297mm @ 96dpi */
+  box-shadow: 0 20px 60px rgba(0,0,0,0.20), 0 4px 12px rgba(0,0,0,0.10);
+  transform-origin: top left;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Fit-width mode: let JS or CSS flow the content at 100% */
+.overlay-body.fit-width .resume-scale-container {
+  width: 100%;
+}
+.overlay-body.fit-width .resume-wrapper-overlay {
+  width: 100% !important;
+  min-height: auto !important;
+  transform: none !important;
+}
+
+/* ═══════════════════════════════════════
+   ADDITIONAL MOBILE POLISH (≤ 480px)
+═══════════════════════════════════════ */
+@media (max-width: 480px) {
+  .hero { padding: 2rem 0.875rem; }
+  .hero h1 { font-size: 1.75rem; }
+  .hero p  { font-size: 0.95rem; }
+
+  .navbar { padding: 0.6rem 0.75rem; }
+
+  input, textarea, select {
+    font-size: 1rem;
+    padding: 0.875rem 0.875rem;
+    min-height: 48px;
+  }
+  .btn    { min-height: 44px; }
+  .nav-btn { min-height: 48px; padding: 0.75rem; }
+
+  .editor-scroll-area { padding: 0.875rem; }
+  .editor-header { padding: 0.875rem 1rem; }
+  .preview-toolbar { flex-direction: column; align-items: stretch; gap: 0.6rem; }
+  .select-input { width: 100%; }
+  .toolbar-actions { display: grid; grid-template-columns: 1fr; gap: 0.5rem; }
+  .toolbar-actions .btn { width: 100%; justify-content: center; }
+
+  .multi-entry { padding: 0.875rem; }
+
+  .overlay-actions .btn { padding: 0.35rem 0.65rem; font-size: 0.78rem; }
+  .overlay-header h3 { font-size: 0.9rem; }
+}
+
+.overflow-alert {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(239, 68, 68, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(239,68,68,0.3);
+  transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+  pointer-events: none;
+}
+.overflow-alert.show {
+  top: 20px;
+}
+.overflow-alert.jiggle {
+  animation: jiggle 0.3s ease;
+}
+@keyframes jiggle {
+  0% { transform: translateX(-50%); }
+  25% { transform: translateX(calc(-50% - 5px)); }
+  50% { transform: translateX(calc(-50% + 5px)); }
+  75% { transform: translateX(calc(-50% - 5px)); }
+  100% { transform: translateX(-50%); }
+}
+body.page-overflowing .editor-scroll-area input:focus,
+body.page-overflowing .editor-scroll-area textarea:focus {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
+/* ═══════════════════════════════════════
+   PRINT / PDF NATIVE EXPORT (ATS Friendly)
+═══════════════════════════════════════ */
+@media print {
+  /* Hide all unnecessary UI elements */
+  .navbar, 
+  .left-panel, 
+  .center-panel, 
+  .preview-toolbar, 
+  .mobile-tab-bar,
+  #preview-overlay, 
+  .autosave-toast,
+  .how-it-works,
+  .testimonials,
+  .hero,
+  .features,
+  .footer {
+    display: none !important;
+  }
+
+  /* Reset layout constraints for printing elements */
+  body, html {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Force the right panel and scroll area to take up the full document flow */
+  #dashboard-page, 
+  .dashboard-layout, 
+  .right-panel, 
+  .preview-scroll-area {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  /* Exactly map the resume wrapper to 1 A4 page */
+  .resume-wrapper {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    min-height: 297mm !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    border: none !important;
+    overflow: hidden !important; /* Force crop at 1 page */
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Prevent split text across pages if A4 is slightly short */
+  #resume-preview-container {
+    break-inside: avoid;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0cm;
+  }
+}
+
