@@ -80,12 +80,17 @@ window.ResumeTemplates = {
                 <p style="font-size: 16px; color: #555; margin-top: 5px;">${data.personal.title || 'Professional Title'}</p>
                 <div style="font-size: 13px; margin-top: 10px; display: flex; justify-content: center; gap: 15px; color: #444;">
                     ${data.personal.email ? `<span>${data.personal.email}</span>` : ''}
-                    ${data.personal.phone ? `<span>| ${data.personal.phone}</span>` : ''}
-                    ${data.personal.location ? `<span>| ${data.personal.location}</span>` : ''}
-                    ${data.personal.link ? `<span>| ${data.personal.link}</span>` : ''}
+                    ${data.personal.phone ? `<span> | </span><span>${data.personal.phone}</span>` : ''}
+                    ${data.personal.location ? `<span> | </span><span>${data.personal.location}</span>` : ''}
+                    ${data.personal.link ? `<span> | </span><span>${data.personal.link}</span>` : ''}
                 </div>
             </div>
-            ${data.personal.summary ? `<p style="font-size: 13px; text-align: center; margin-bottom: 25px; line-height: 1.5; padding: 0 40px;">${data.personal.summary}</p>` : ''}
+            ${data.personal.summary ? `
+                <div style="margin-bottom: 25px;">
+                    <h2 class="section-title" style="border-color: #333; font-size: 16px; text-align: left;">Summary</h2>
+                    <p style="font-size: 13px; text-align: center; line-height: 1.5; padding: 0 40px;">${data.personal.summary}</p>
+                </div>
+            ` : ''}
             
             ${data.experience.length ? `
                 <div style="margin-bottom: 20px;">
@@ -206,7 +211,12 @@ window.ResumeTemplates = {
                 </div>
             </div>
             
-            ${data.personal.summary ? `<div style="background: #fff1f2; padding: 20px; border-left: 4px solid #e11d48; border-radius: 4px; font-size: 14px; margin-bottom: 30px; line-height: 1.6; color: #4c0519;">${data.personal.summary}</div>` : ''}
+            ${data.personal.summary ? `
+                <div style="margin-bottom: 30px;">
+                    <h2 style="font-size: 18px; color: #e11d48; margin-bottom: 10px;">Summary</h2>
+                    <div style="background: #fff1f2; padding: 20px; border-left: 4px solid #e11d48; border-radius: 4px; font-size: 14px; line-height: 1.6; color: #4c0519;">${data.personal.summary}</div>
+                </div>
+            ` : ''}
 
             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;">
                 <div>
@@ -260,10 +270,10 @@ window.ResumeTemplates = {
             <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px;">
                 <h1 style="font-size: 28px; text-transform: uppercase; margin-bottom: 5px;">${data.personal.name || 'John Doe'}</h1>
                 <div style="font-size: 13px;">
-                    ${data.personal.location ? `${data.personal.location} | ` : ''}
-                    ${data.personal.phone ? `${data.personal.phone} | ` : ''}
-                    ${data.personal.email ? `${data.personal.email}` : ''}
-                    ${data.personal.link ? ` | ${data.personal.link}` : ''}
+                    ${data.personal.location ? `<span>${data.personal.location}</span> ` : ''}
+                    ${data.personal.phone ? `<span> | </span><span>${data.personal.phone}</span>` : ''}
+                    ${data.personal.email ? `<span> | </span><span>${data.personal.email}</span>` : ''}
+                    ${data.personal.link ? `<span> | </span><span>${data.personal.link}</span>` : ''}
                 </div>
             </div>
 
@@ -320,13 +330,14 @@ window.ResumeTemplates = {
                 <h1 style="color: #38bdf8; font-size: 32px;">> ${data.personal.name || 'John Doe'}_</h1>
                 <p style="font-size: 16px; color: #94a3b8;">${data.personal.title || 'Software Engineer'}</p>
                 <div style="font-size: 13px; color: #64748b; margin-top: 10px;">
-                    ${data.personal.email} // ${data.personal.phone} // ${data.personal.location} // ${data.personal.link}
+                    <span>${data.personal.email}</span> <span>//</span> <span>${data.personal.phone}</span> <span>//</span> <span>${data.personal.location}</span> <span>//</span> <span>${data.personal.link}</span>
                 </div>
             </div>
 
             ${data.personal.summary ? `
                 <div style="margin-bottom: 20px;">
-                    <p style="font-size: 13px; line-height: 1.6;">/* ${data.personal.summary} */</p>
+                    <h2 style="color: #38bdf8; font-size: 18px; margin-bottom: 8px;">[ Summary ]</h2>
+                    <p style="font-size: 13px; line-height: 1.6; color: #94a3b8;">/* ${data.personal.summary} */</p>
                 </div>
             ` : ''}
 
@@ -400,13 +411,14 @@ window.ResumeTemplates = {
                 <h1 style="font-size: 36px; font-weight: normal; letter-spacing: 2px; color: #000;">${data.personal.name || 'John Doe'}</h1>
                 <p style="font-style: italic; color: #666; font-size: 16px; margin: 5px 0 15px 0;">${data.personal.title || 'Professional Title'}</p>
                 <div style="font-size: 12px; font-family: sans-serif; text-transform: uppercase; letter-spacing: 1px; color: #888;">
-                    ${data.personal.email} &nbsp;·&nbsp; ${data.personal.phone} &nbsp;·&nbsp; ${data.personal.location} &nbsp;·&nbsp; ${data.personal.link}
+                    <span>${data.personal.email}</span> <span>&nbsp;·&nbsp;</span> <span>${data.personal.phone}</span> <span>&nbsp;·&nbsp;</span> <span>${data.personal.location}</span> <span>&nbsp;·&nbsp;</span> <span>${data.personal.link}</span>
                 </div>
             </div>
 
             ${data.personal.summary ? `
-                <div style="text-align: center; max-width: 80%; margin: 0 auto 40px auto; font-size: 14px; line-height: 1.8; color: #444;">
-                    ${data.personal.summary}
+                <div style="text-align: center; max-width: 80%; margin: 0 auto 40px auto;">
+                    <h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 12px;">Summary</h2>
+                    <p style="font-size: 14px; line-height: 1.8; color: #444;">${data.personal.summary}</p>
                 </div>
             ` : ''}
 

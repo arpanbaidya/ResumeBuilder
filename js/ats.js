@@ -116,7 +116,40 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
-            const pageText = textContent.items.map(item => item.str).join(' ');
+
+            // Position-aware extraction: only insert a space between items when
+            // the rendered gap is large enough to represent a real word boundary.
+            // Naively joining with ' ' breaks tokens like email addresses because
+            // pdf.js splits them into many small sub-items.
+            let pageText = '';
+            let prevRight = null;   // right edge of last item (x + width)
+            let prevY    = null;    // baseline y of last item
+
+            textContent.items.forEach(item => {
+                if (!item.str) return;
+                const x = item.transform[4];  // left edge x
+                const y = item.transform[5];  // baseline y
+                const w = item.width || 0;
+
+                if (prevRight !== null) {
+                    const gap = x - prevRight;
+                    const avgCharWidth = w / (item.str.length || 1);
+
+                    if (Math.abs(y - prevY) > 2) {
+                        // Different baseline → new line
+                        pageText += '\n';
+                    } else if (gap > avgCharWidth * 0.25) {
+                        // Meaningful horizontal gap → word boundary
+                        pageText += ' ';
+                    }
+                    // gap <= 0.25 char widths → same token (e.g. parts of an email), no space
+                }
+
+                pageText += item.str;
+                prevRight = x + w;
+                prevY     = y;
+            });
+
             text += pageText + "\n";
         }
         return text;
@@ -180,24 +213,35 @@ document.addEventListener('DOMContentLoaded', () => {
         totalScore += formatScore;
 
         // 3. Section Structure (15% impact)
-        // ATS expects: Experience, Education, Skills, Summary, Contact (contact check handles separately)
+        // Each entry: { label (friendly name shown to user), synonyms (any match counts) }
+        const sectionsToCheck = [
+            { label: 'Experience',    synonyms: ['experience', 'work history', 'employment'] },
+            { label: 'Education',     synonyms: ['education', 'academic', 'qualification'] },
+            { label: 'Skills',        synonyms: ['skills', 'expertise', 'competencies', 'technologies'] },
+            { label: 'Summary',       synonyms: ['summary', 'profile', 'objective', 'about', 'overview'] },
+        ];
         let sectionScore = 0;
-        const sectionsToCheck = ['experience', 'education', 'skills', 'summary'];
         const foundSections = [];
-        sectionsToCheck.forEach(sec => {
-            const regex = new RegExp(`\\b${sec}\\b`, 'i');
-            if (regex.test(text)) {
+        const missingSections = [];
+
+        sectionsToCheck.forEach(section => {
+            const found = section.synonyms.some(syn => {
+                const regex = new RegExp(`\\b${syn}\\b`, 'i');
+                return regex.test(text);
+            });
+            if (found) {
                 sectionScore += (15 / sectionsToCheck.length);
-                foundSections.push(sec);
+                foundSections.push(section.label);
+            } else {
+                missingSections.push(section.label);
             }
         });
         totalScore += sectionScore;
-        
-        if (foundSections.length === sectionsToCheck.length) {
-            feedback.push({ type: 'positive', title: 'Standard Sections Found', desc: `Found standard headings like Experience, Education, and Skills.` });
+
+        if (missingSections.length === 0) {
+            feedback.push({ type: 'positive', title: 'Standard Sections Found', desc: `All key sections detected: Experience, Education, Skills, and Summary/Profile.` });
         } else {
-            const missing = sectionsToCheck.filter(s => !foundSections.includes(s));
-            feedback.push({ type: 'negative', title: 'Missing Core Sections', desc: `Ensure you have clear headings for: ${missing.join(', ')}.` });
+            feedback.push({ type: 'negative', title: 'Missing Core Sections', desc: `Ensure you have clear headings for: ${missingSections.join(', ')}.` });
         }
 
 
@@ -236,9 +280,12 @@ document.addEventListener('DOMContentLoaded', () => {
         totalScore += readScore;
 
         // 8. Contact Information (5% impact)
+        // Strip whitespace around @ and between digit groups before testing,
+        // as a secondary safety net for any residual pdf.js extraction artefacts.
         let contactScore = 0;
-        const hasEmail = /[\w.-]+@[\w.-]+\.\w+/.test(text);
-        const hasPhone = /\+?\d[\d\-\s()]{7,}\d/.test(text);
+        const normalised = text.replace(/\s+@\s+/g, '@').replace(/\s+\.\s+/g, '.');
+        const hasEmail = /[\w.-]+@[\w.-]+\.\w+/.test(normalised);
+        const hasPhone = /\+?\d[\d\-\s().]{6,}\d/.test(text);
         
         if (hasEmail) contactScore += 2.5;
         if (hasPhone) contactScore += 2.5;

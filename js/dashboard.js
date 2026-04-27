@@ -59,44 +59,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global reference for initial render
     window.renderPreview = renderPreview;
 
-    // Global helper: extract plain text from current state for ATS scoring
+    // Global helper: extract plain text from the rendered resume preview DOM.
+    // This mirrors what pdf.js / external ATS tools would extract from the downloaded PDF,
+    // ensuring the in-editor score matches the score from uploading the exported file.
     window.getResumeText = () => {
+        const previewEl = document.getElementById('resume-preview-container');
+        if (previewEl) {
+            // innerText respects block layout, inserts newlines at block boundaries,
+            // and preserves bullet characters exactly as rendered — matching PDF extraction.
+            return previewEl.innerText || previewEl.textContent || '';
+        }
+        // Fallback: build from state if preview is not available
         let text = 'Summary\n';
         if (state.personal) {
             text += `${state.personal.name} ${state.personal.title} ${state.personal.email} ${state.personal.phone} ${state.personal.summary}\n`;
         }
-        
-        // Helper to format descriptions as bullet points for ATS checker
         const formatDesc = (desc) => {
             if (!desc) return '';
             return desc.split(/[\n;]+/).map(s => s.trim() ? `• ${s.trim()}` : '').join('\n');
         };
-
         text += 'Experience\n';
-        if (state.experience) {
-            state.experience.forEach(e => {
-                text += `${e.title} ${e.company} ${e.date}\n${formatDesc(e.desc)}\n`;
-            });
-        }
+        if (state.experience) state.experience.forEach(e => { text += `${e.title} ${e.company} ${e.date}\n${formatDesc(e.desc)}\n`; });
         text += 'Education\n';
-        if (state.education) {
-            state.education.forEach(e => {
-                text += `${e.degree} ${e.school} ${e.date}\n`;
-            });
-        }
+        if (state.education) state.education.forEach(e => { text += `${e.degree} ${e.school} ${e.date}\n`; });
         text += 'Skills\n' + (state.skills || '') + '\n';
         text += 'Projects\n';
-        if (state.projects) {
-            state.projects.forEach(p => {
-                text += `${p.name}\n${formatDesc(p.desc)}\n`;
-            });
-        }
+        if (state.projects) state.projects.forEach(p => { text += `${p.name}\n${formatDesc(p.desc)}\n`; });
         text += 'Certifications\n';
-        if (state.certs) {
-            state.certs.forEach(c => {
-                text += `${c.name} ${c.date}\n`;
-            });
-        }
+        if (state.certs) state.certs.forEach(c => { text += `${c.name} ${c.date}\n`; });
         return text;
     };
 
