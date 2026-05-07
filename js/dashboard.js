@@ -116,29 +116,37 @@ document.addEventListener('DOMContentLoaded', () => {
             // Sync the fullscreen overlay preview
             const overlayWrapper = document.getElementById('resume-wrapper-overlay');
             if (overlayWrapper) overlayWrapper.innerHTML = html;
-        }
 
-        // --- ENFORCE STRICT 1 PAGE LIMIT ---
-        const wrapper = document.getElementById('resume-wrapper');
-        if (wrapper && previewContainer) {
-            // Approx 297mm in pixels at 96dpi (1122.5), giving slight tolerance
-            const A4_MAX_HEIGHT = 1122; 
-            
-            // Measure natural unconstrained height
-            wrapper.style.maxHeight = 'none';
-            wrapper.style.overflow = 'visible';
-            const currentHeight = previewContainer.scrollHeight;
-            
-            // Reapply strict constraints
-            wrapper.style.maxHeight = '297mm';
-            wrapper.style.overflow = 'hidden';
+            // --- DYNAMIC PAGINATION: 1 page by default, page 2 appears on overflow ---
+            const wrapper = document.getElementById('resume-wrapper');
+            const overlayWrapperEl = document.getElementById('resume-wrapper-overlay');
+            if (wrapper && previewContainer) {
+                const A4_PAGE1 = 1123;  // 297mm @ 96dpi — end of page 1
+                const A4_MAX   = 2246;  // 594mm @ 96dpi — end of page 2 (typing lock)
 
-            const dashboardPage = document.getElementById('dashboard-page');
+                // Temporarily unconstrain to measure true content height
+                wrapper.style.maxHeight = 'none';
+                wrapper.style.overflow  = 'visible';
+                const currentHeight = previewContainer.scrollHeight;
 
-            if (currentHeight > A4_MAX_HEIGHT) {
-                document.body.classList.add('page-overflowing');
-            } else {
-                document.body.classList.remove('page-overflowing');
+                // Show page 2 only when content spills past page 1
+                if (currentHeight > A4_PAGE1) {
+                    wrapper.classList.add('has-page-2');
+                    wrapper.style.maxHeight = '594mm';  // 2 pages
+                    if (overlayWrapperEl) overlayWrapperEl.classList.add('has-page-2');
+                } else {
+                    wrapper.classList.remove('has-page-2');
+                    wrapper.style.maxHeight = '297mm';  // 1 page
+                    if (overlayWrapperEl) overlayWrapperEl.classList.remove('has-page-2');
+                }
+                wrapper.style.overflow = 'hidden';
+
+                // Typing lock: block new input once both pages are full
+                if (currentHeight > A4_MAX) {
+                    document.body.classList.add('page-overflowing');
+                } else {
+                    document.body.classList.remove('page-overflowing');
+                }
             }
         }
     }

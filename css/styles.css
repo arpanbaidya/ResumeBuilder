@@ -553,8 +553,12 @@ input:focus, textarea:focus, select:focus {
 .toolbar-actions { display: flex; gap: 0.5rem; }
 
 .preview-scroll-area {
-  flex: 1; overflow-y: auto; padding: 2rem;
-  display: flex; justify-content: center; align-items: flex-start;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   background: #e2e8f0;
   border-radius: var(--glass-radius-lg);
 }
@@ -696,34 +700,56 @@ body.dark .preview-scroll-area { background: #0f172a; }
 
 /* ═══════════════════════════════════════
    A4 RESUME WRAPPER — always plain white
+   Starts as 1 page; grows to 2 when content overflows
 ═══════════════════════════════════════ */
 .resume-wrapper {
   background: white;
   color: #111;
-  width: 210mm;
-  height: 297mm;         /* Enforce exact A4 height */
+  width: 100%;             /* Fill the preview panel — no side gaps */
+  height: 297mm;           /* 1-page default */
   max-height: 297mm;
   min-height: 297mm;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: none;        /* No shadow — prevents false dark band at bottom */
   transform-origin: top center;
-  position: relative; 
-  overflow: hidden;      /* Physically clip overflow from rendering */
-  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;        /* Flush with container edges */
+  transition: height 0.35s ease, max-height 0.35s ease, min-height 0.35s ease;
 }
+
+/* Page 2 revealed — wrapper expands to 2 A4 pages */
+/* A Google-Docs-style grey band is baked into the background at the 297mm mark */
+.resume-wrapper.has-page-2 {
+  height: 594mm;
+  max-height: 594mm;
+  min-height: 594mm;
+  /* Grey stripe at the page boundary simulates two separate sheets */
+  background: linear-gradient(
+    to bottom,
+    #ffffff 0,
+    #ffffff calc(297mm - 1px),
+    #c8d0da calc(297mm - 1px),
+    #c8d0da calc(297mm + 11px),
+    #ffffff calc(297mm + 11px),
+    #ffffff 594mm
+  );
+}
+
+/* No ::after divider needed — gradient handles the visual break */
+.resume-wrapper::after { display: none; }
 
 /* ═══════════════════════════════════════
    RESPONSIVE BREAKPOINTS
 ═══════════════════════════════════════ */
 @media (max-width: 1400px) {
   .dashboard-layout { grid-template-columns: 240px 400px 1fr; }
-  .resume-wrapper { transform: scale(0.85); margin-bottom: -15%; }
 }
 
 @media (max-width: 1100px) {
   #dashboard-page { height: auto; overflow: visible; }
   .dashboard-layout { grid-template-columns: 1fr; }
   .preview-scroll-area { min-height: 600px; align-items: center; }
-  .resume-wrapper { transform: scale(1); margin: 0; max-width: 900px; width: 100%; min-height: auto; }
+  .resume-wrapper { transform: none; margin: 0; width: 100%; min-height: auto; }
   .ats-grid { grid-template-columns: 1fr; }
 }
 
@@ -1066,17 +1092,36 @@ body.dark .overlay-body { background: #0b0f19; }
   flex-shrink: 0;
 }
 
-/* The overlay resume wrapper — true A4 dimensions, scaled by JS */
+/* The overlay resume wrapper — starts at 1 A4 page, expands to 2 with has-page-2 */
 .resume-wrapper-overlay {
   background: white;
   color: #111;
   width: 794px;   /* 210mm @ 96dpi */
-  min-height: 1123px; /* 297mm @ 96dpi */
-  box-shadow: 0 20px 60px rgba(0,0,0,0.20), 0 4px 12px rgba(0,0,0,0.10);
+  min-height: 1123px; /* 1 page default */
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
   transform-origin: top left;
   border-radius: 4px;
   overflow: hidden;
+  position: relative;
 }
+
+/* Overlay grows to 2 pages — Google-Docs grey band at 1123px boundary */
+.resume-wrapper-overlay.has-page-2 {
+  min-height: 2246px; /* 2 × 297mm @ 96dpi */
+  background: linear-gradient(
+    to bottom,
+    #ffffff 0,
+    #ffffff calc(1123px - 1px),
+    #c8d0da calc(1123px - 1px),
+    #c8d0da calc(1123px + 11px),
+    #ffffff calc(1123px + 11px),
+    #ffffff 2246px
+  );
+}
+
+/* No ::after divider — gradient handles the page break visual */
+.resume-wrapper-overlay::after { display: none; }
+
 
 /* Fit-width mode: let JS or CSS flow the content at 100% */
 .overlay-body.fit-width .resume-scale-container {
@@ -1146,7 +1191,7 @@ body.page-overflowing .editor-scroll-area textarea:focus {
     display: none !important;
   }
 
-  /* Reset layout constraints for printing elements */
+  /* Reset layout constraints for printing */
   body, html {
     margin: 0 !important;
     padding: 0 !important;
@@ -1156,7 +1201,7 @@ body.page-overflowing .editor-scroll-area textarea:focus {
     overflow: visible !important;
   }
 
-  /* Force the right panel and scroll area to take up the full document flow */
+  /* Force the right panel and scroll area into static flow */
   #dashboard-page, 
   .dashboard-layout, 
   .right-panel, 
@@ -1171,7 +1216,7 @@ body.page-overflowing .editor-scroll-area textarea:focus {
     background: transparent !important;
   }
 
-  /* Exactly map the resume wrapper to 1 A4 page */
+  /* ── Default: 1-page export (no has-page-2 class) ── */
   .resume-wrapper {
     position: relative !important;
     left: auto !important;
@@ -1186,14 +1231,34 @@ body.page-overflowing .editor-scroll-area textarea:focus {
     box-shadow: none !important;
     transform: none !important;
     border: none !important;
-    overflow: hidden !important; /* Force crop at 1 page */
+    overflow: hidden !important;   /* Hard clip — prevents 3rd page */
     page-break-after: avoid !important;
     page-break-inside: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
   }
 
-  /* Prevent split text across pages if A4 is slightly short */
+  /* ── 2-page export: expand to 594mm when page 2 is visible ── */
+  .resume-wrapper.has-page-2 {
+    height: 594mm !important;
+    max-height: 594mm !important;
+    min-height: 594mm !important;
+    page-break-after: auto !important;
+    page-break-inside: auto !important;
+    break-after: auto !important;
+    break-inside: auto !important;
+  }
+
+  /* Hide visual dividers in print */
+  .resume-wrapper::after,
+  .resume-wrapper.has-page-2::after {
+    display: none !important;
+  }
+
+  /* Inner container must not generate extra pages on its own */
   #resume-preview-container {
-    break-inside: avoid;
+    overflow: hidden !important;
+    break-inside: auto !important;
   }
 
   @page {
@@ -1201,4 +1266,3 @@ body.page-overflowing .editor-scroll-area textarea:focus {
     margin: 0cm;
   }
 }
-

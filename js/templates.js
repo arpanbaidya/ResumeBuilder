@@ -16,8 +16,8 @@ const commonResumeStyles = `
         
         /* Layouts */
         .layout-split { display: grid; grid-template-columns: 280px 1fr; height: 100%; }
-        .sidebar { background: #f3f4f6; padding: 30px; }
-        .main-content { padding: 30px 40px; }
+        .sidebar { background: #f3f4f6; padding: 20px 30px 30px; }
+        .main-content { padding: 20px 40px 30px; }
     </style>
 `;
 
@@ -74,7 +74,7 @@ const buildProjList = (items) => {
 window.ResumeTemplates = {
     minimal: (data) => `
         ${commonResumeStyles}
-        <div class="template-body" style="padding: 40px; color: #111;">
+        <div class="template-body" style="padding: 20px 40px 40px; color: #111;">
             <div class="template-header" style="text-align: center;">
                 <h1 style="font-size: 32px; letter-spacing: 1px;">${data.personal.name || 'John Doe'}</h1>
                 <p style="font-size: 16px; color: #555; margin-top: 5px;">${data.personal.title || 'Professional Title'}</p>
@@ -197,7 +197,7 @@ window.ResumeTemplates = {
 
     creative: (data) => `
         ${commonResumeStyles}
-        <div class="template-body" style="padding: 40px; font-family: 'Outfit', sans-serif;">
+        <div class="template-body" style="padding: 20px 40px 40px; font-family: 'Outfit', sans-serif;">
             <div style="display: flex; gap: 40px; align-items: flex-start; margin-bottom: 30px;">
                 <div style="flex: 1;">
                     <h1 style="font-size: 42px; color: #e11d48; margin-bottom: 5px; line-height: 1;">${data.personal.name || 'John<br>Doe'}</h1>
@@ -266,7 +266,7 @@ window.ResumeTemplates = {
 
     corporate: (data) => `
         ${commonResumeStyles}
-        <div class="template-body" style="padding: 40px; font-family: 'Times New Roman', serif; color: #000;">
+        <div class="template-body" style="padding: 20px 40px 40px; font-family: 'Times New Roman', serif; color: #000;">
             <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px;">
                 <h1 style="font-size: 28px; text-transform: uppercase; margin-bottom: 5px;">${data.personal.name || 'John Doe'}</h1>
                 <div style="font-size: 13px;">
@@ -325,7 +325,7 @@ window.ResumeTemplates = {
 
     tech: (data) => `
         ${commonResumeStyles}
-        <div class="template-body" style="padding: 40px; background: #0f172a; color: #e2e8f0; font-family: monospace;">
+        <div class="template-body" style="padding: 20px 40px 40px; background: #0f172a; color: #e2e8f0; font-family: monospace;">
             <div style="margin-bottom: 30px;">
                 <h1 style="color: #38bdf8; font-size: 32px;">> ${data.personal.name || 'John Doe'}_</h1>
                 <p style="font-size: 16px; color: #94a3b8;">${data.personal.title || 'Software Engineer'}</p>
@@ -406,7 +406,7 @@ window.ResumeTemplates = {
 
     elegant: (data) => `
         ${commonResumeStyles}
-        <div class="template-body" style="padding: 50px; font-family: 'Georgia', serif; color: #333;">
+        <div class="template-body" style="padding: 20px 50px 50px; font-family: 'Georgia', serif; color: #333;">
             <div style="text-align: center; margin-bottom: 40px;">
                 <h1 style="font-size: 36px; font-weight: normal; letter-spacing: 2px; color: #000;">${data.personal.name || 'John Doe'}</h1>
                 <p style="font-style: italic; color: #666; font-size: 16px; margin: 5px 0 15px 0;">${data.personal.title || 'Professional Title'}</p>

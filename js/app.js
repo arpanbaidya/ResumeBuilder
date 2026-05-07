@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!wrapper || !container || !overlayBody) return;
 
         const A4_W = 794;   // 210 mm @ 96 dpi
-        const A4_H = 1123;  // 297 mm @ 96 dpi
+        const A4_H = 2246;  // 2 × 297 mm @ 96 dpi (front + back of one sheet)
 
         // Available width inside overlay body (subtract padding)
         const avail = overlayBody.clientWidth - 32;
