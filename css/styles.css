@@ -555,14 +555,14 @@ input:focus, textarea:focus, select:focus {
 .preview-scroll-area {
   flex: 1;
   overflow-y: auto;
-  padding: 0;
+  padding: 2rem;              /* Grey canvas shows around the A4 paper */
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background: #e2e8f0;
+  background: #d1d5db;
   border-radius: var(--glass-radius-lg);
 }
-body.dark .preview-scroll-area { background: #0f172a; }
+body.dark .preview-scroll-area { background: #0d1117; }
 
 /* ═══════════════════════════════════════
    ATS CHECKER PAGE
@@ -699,43 +699,46 @@ body.dark .preview-scroll-area { background: #0f172a; }
 .feedback-content p  { font-size: 0.9rem; color: var(--text-main); opacity: 0.75; line-height: 1.55; }
 
 /* ═══════════════════════════════════════
-   A4 RESUME WRAPPER — always plain white
-   Starts as 1 page; grows to 2 when content overflows
+   A4 RESUME WRAPPER — white paper on grey canvas
+   Fixed 210mm width, centred; grows to 2 pages on overflow
 ═══════════════════════════════════════ */
 .resume-wrapper {
   background: white;
   color: #111;
-  width: 100%;             /* Fill the preview panel — no side gaps */
-  height: 297mm;           /* 1-page default */
+  width: 210mm;                /* True A4 width — paper floats on grey canvas */
+  flex-shrink: 0;
+  height: 297mm;               /* 1-page default */
   max-height: 297mm;
   min-height: 297mm;
-  box-shadow: none;        /* No shadow — prevents false dark band at bottom */
+  /* Paper drop-shadow: looks like a real document on a desk */
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.12),
+    0 4px 16px rgba(0,0,0,0.15),
+    0 12px 40px rgba(0,0,0,0.10);
   transform-origin: top center;
   position: relative;
   overflow: hidden;
-  border-radius: 0;        /* Flush with container edges */
+  border-radius: 2px;
   transition: height 0.35s ease, max-height 0.35s ease, min-height 0.35s ease;
 }
 
-/* Page 2 revealed — wrapper expands to 2 A4 pages */
-/* A Google-Docs-style grey band is baked into the background at the 297mm mark */
+/* Page 2 — expand wrapper; show grey page-break band at 297mm */
 .resume-wrapper.has-page-2 {
   height: 594mm;
   max-height: 594mm;
   min-height: 594mm;
-  /* Grey stripe at the page boundary simulates two separate sheets */
   background: linear-gradient(
     to bottom,
     #ffffff 0,
     #ffffff calc(297mm - 1px),
-    #c8d0da calc(297mm - 1px),
-    #c8d0da calc(297mm + 11px),
-    #ffffff calc(297mm + 11px),
+    #b8c0cc calc(297mm - 1px),
+    #b8c0cc calc(297mm + 16px),
+    #ffffff calc(297mm + 16px),
     #ffffff 594mm
   );
 }
 
-/* No ::after divider needed — gradient handles the visual break */
+/* Hide any leftover ::after divider */
 .resume-wrapper::after { display: none; }
 
 /* ═══════════════════════════════════════
@@ -743,13 +746,22 @@ body.dark .preview-scroll-area { background: #0f172a; }
 ═══════════════════════════════════════ */
 @media (max-width: 1400px) {
   .dashboard-layout { grid-template-columns: 240px 400px 1fr; }
+  /* Scale paper down so it fits the narrower preview column */
+  .resume-wrapper {
+    transform: scale(0.78);
+    transform-origin: top center;
+    margin-bottom: calc((297mm * 0.78) - 297mm);  /* collapse extra space after scale */
+  }
+  .resume-wrapper.has-page-2 {
+    margin-bottom: calc((594mm * 0.78) - 594mm);
+  }
 }
 
 @media (max-width: 1100px) {
   #dashboard-page { height: auto; overflow: visible; }
   .dashboard-layout { grid-template-columns: 1fr; }
-  .preview-scroll-area { min-height: 600px; align-items: center; }
-  .resume-wrapper { transform: none; margin: 0; width: 100%; min-height: auto; }
+  .preview-scroll-area { min-height: 500px; align-items: center; padding: 1.5rem; }
+  .resume-wrapper { transform: scale(0.9); transform-origin: top center; }
   .ats-grid { grid-template-columns: 1fr; }
 }
 
